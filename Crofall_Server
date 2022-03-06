@@ -1,0 +1,14 @@
+FROM alpine:3.14
+RUN apk add bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib curl
+RUN apk add libgdiplus --repository https://dl-3.alpinelinux.org/alpine/edge/testing/
+RUN wget -O dotnet-install.sh https://dot.net/v1/dotnet-install.sh
+RUN mkdir -p /usr/share/dotnet 
+RUN ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet 
+RUN chmod +x ./dotnet-install.sh
+RUN ./dotnet-install.sh --channel 6.0 --runtime aspnetcore --install-dir /usr/share/dotnet
+RUN dotnet --info
+EXPOSE 6000/udp
+WORKDIR /app
+COPY App ./
+WORKDIR /app/Binaries/Server
+ENTRYPOINT ["dotnet", "CryoFall_Server.dll"]
